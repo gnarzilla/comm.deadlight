@@ -1,0 +1,12 @@
+sqlite3 ~/comm.deadlight/emails.db "CREATE TABLE IF NOT EXISTS emails (id INTEGER PRIMARY KEY, message_id TEXT, from_text TEXT, to_text TEXT, subject TEXT, date TEXT, body TEXT);"
+for json_file in ~/comm.deadlight/emails/*.json; do
+    if [ -f "$json_file" ]; then
+        message_id=$(gawk '/"message_id":/ {gsub(/.*"message_id": "/, ""); gsub(/".*/, ""); print}' "$json_file")")
+        from=$(gawk '/"from":/ {gsub(/.*"from": "/, ""); gsub(/".*/, ""); print}' "$json_file")")
+        to=$(gawk '/"to":/ {gsub(/.*"to": "/, ""); gsub(/".*/, ""); print}' "$json_file")")
+        subject=$(gawk '/"subject":/ {gsub(/.*"subject": "/, ""); gsub(/".*/, ""); print}' "$json_file")")
+        date=$(gawk '/"date":/ {gsub(/.*"date": "/, ""); gsub(/".*/, ""); print}' "$json_file")")
+        body=$(gawk '/"body":/ {gsub(/.*"body": "/, ""); gsub(/".*/, ""); print}' "$json_file")")
+        sqlite3 ~/comm.deadlight/emails.db "INSERT INTO emails (message_id, from_text, to_text, subject, date, body) VALUES ('$message_id', '$from', '$to', '$subject', '$date', '$body');"
+    fi
+done
